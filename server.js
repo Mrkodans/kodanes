@@ -31,10 +31,10 @@ function saveDB(data) {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// API: Submit Project Request
+// API: Submit Request
 app.post('/api/submit', (req, res) => {
-    const { name, projectType, message } = req.body;
-    if (!name || !projectType || !message) {
+    const { name, category, urgency, message } = req.body;
+    if (!name || !category || !urgency || !message) {
         return res.status(400).json({ error: 'Tüm alanlar zorunludur.' });
     }
 
@@ -42,10 +42,12 @@ app.post('/api/submit', (req, res) => {
     const newSub = {
         id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
         name,
-        projectType,
+        category,
+        urgency,
         message,
         date: new Date().toLocaleString('tr-TR'),
-        status: 'Beklemede'
+        status: 'Beklemede',
+        adminNote: ''
     };
 
     db.submissions.push(newSub);
@@ -54,15 +56,15 @@ app.post('/api/submit', (req, res) => {
     res.json({ success: true, submission: newSub });
 });
 
-// API: Get All Submissions (Admin)
+// API: Get All Submissions (Admin & Client)
 app.get('/api/submissions', (req, res) => {
     const db = getDB();
     res.json(db.submissions);
 });
 
-// API: Update Status (Admin Approve / Reject)
+// API: Update Status & Admin Note (Admin)
 app.post('/api/update-status', (req, res) => {
-    const { id, status } = req.body;
+    const { id, status, adminNote } = req.body;
     if (!id || !status) {
         return res.status(400).json({ error: 'Geçersiz parametreler.' });
     }
@@ -72,6 +74,9 @@ app.post('/api/update-status', (req, res) => {
     db.submissions = db.submissions.map(sub => {
         if (sub.id === id) {
             sub.status = status;
+            if (adminNote !== undefined) {
+                sub.adminNote = adminNote;
+            }
             found = true;
         }
         return sub;
@@ -95,5 +100,5 @@ app.post('/api/login', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Kodanes server running at http://localhost:${PORT}`);
+    console.log(`Kodanes Aile Meclisi server running at http://localhost:${PORT}`);
 });
