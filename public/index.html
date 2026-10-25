@@ -60,7 +60,6 @@
             overflow-x: hidden;
         }
         
-        /* Ambient Background Glow */
         body::before {
             content: '';
             position: absolute;
@@ -571,7 +570,7 @@
                 </div>
                 <div class="form-group">
                     <label for="category">Konu Kategorisi</label>
-                    <select id="category" required onchange="handleCategoryChange(this.value)">
+                    <select id="category" required>
                         <option value="">Seçiniz...</option>
                         <option value="IT & Teknik Destek">IT & Teknik Destek (Sorumlu: 👑 Bedirhan)</option>
                         <option value="Tamirat & Tesisat">Tamirat & Tesisat (Sorumlu: 👨 Baba)</option>
@@ -685,11 +684,6 @@
             alert('Günün menüsü başarıyla güncellendi!');
         }
 
-        // Auto-select category responsibility hint
-        function handleCategoryChange(cat) {
-            // Optional helper logic if needed
-        }
-
         // RBAC Role Switching System
         function switchUserRole(role) {
             localStorage.setItem('kodanes_active_role', role);
@@ -724,16 +718,20 @@
                 statsGrid.style.display = 'none';
                 mainTitle.innerText = 'Kodanes Misafir Portalı';
                 mainSubtitle.innerText = 'Evimize hoş geldiniz! Günün yemek menüsüne ve misafir Wi-Fi bilgilerine buradan erişebilirsiniz.';
-            } else if (role === 'anne') {
-                authorName = 'Anne';
-                mainTitle.innerText = 'Anne Aile Masası (Mutfak & Ev Amiri)';
-                mainSubtitle.innerText = 'Mutfak alışverişleri ve günün yemek menüsü yönetim merkezi.';
-                changeMenuBtn.style.display = 'inline-block';
-            } else if (role === 'baba') {
-                authorName = 'Baba';
-                mainTitle.innerText = 'Baba Lojistik & Tesisat Masası';
-                mainSubtitle.innerText = 'Ev içi tamirat, tesisat, ulaşım ve alışveriş görev takip merkezi.';
-            } else if (role === 'kardes') {
+            else if (role === 'anne') {
+                    // Anne sees only her own requests OR Günün Yemek Menüsü & Öneri
+                    filteredSubs = submissions.filter(s =>
+                        s.name === 'Anne' ||
+                        s.category === 'Günün Yemek Menüsü & Öneri'
+                    );
+                else if (role === 'baba') {
+                    // Baba sees only his own requests OR Tamirat & Tesisat / Ulaşım & Lojistik
+                    filteredSubs = submissions.filter(s =>
+                        s.name === 'Baba' ||
+                        s.category === 'Tamirat & Tesisat' ||
+                        s.category === 'Ulaşım & Lojistik'
+                    );
+                } else if (role === 'kardes') {
                 authorName = 'Kardeş';
                 mainTitle.innerText = 'Kardeş Destek Masası';
                 mainSubtitle.innerText = 'İstekler, şikayetler ve meclis talepleri.';
@@ -748,7 +746,6 @@
             if (nameInput) nameInput.value = authorName;
             if (authorLockedBadge) authorLockedBadge.innerText = `👤 ${authorName} (Kilitli)`;
 
-            // Load saved menu if exists
             const savedMenu = localStorage.getItem('kodanes_daily_menu');
             if (savedMenu) {
                 document.getElementById('currentMenuText').innerText = savedMenu;
@@ -774,10 +771,6 @@
                 const data = await res.json();
 
                 if (data.success) {
-                    let mySubs = JSON.parse(localStorage.getItem('kodanes_family_subs') || '[]');
-                    mySubs.push(data.submission.id);
-                    localStorage.setItem('kodanes_family_subs', JSON.stringify(mySubs));
-
                     document.getElementById('formSuccess').style.display = 'block';
                     document.getElementById('contactForm').reset();
                     
@@ -798,11 +791,10 @@
             }
         }
 
-        // Load Client Notifications with RBAC & Role Filtering
+        // Load Client Notifications with Cross-Device Centralized Server Data & Privacy Filtering
         async function loadClientNotifications() {
             const role = localStorage.getItem('kodanes_active_role') || 'misafir';
             const box = document.getElementById('clientNotifications');
-            const mySubIds = JSON.parse(localStorage.getItem('kodanes_family_subs') || '[]');
 
             if (role === 'misafir') {
                 box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.95rem; text-align: center; padding: 1.5rem;">Misafir modunda bildirim listesi görüntülenmez.</p>';
@@ -818,15 +810,27 @@
                 document.getElementById('statResolved').innerText = resolvedCount;
                 document.getElementById('statPending').innerText = pendingCount;
 
-                let filteredSubs = submissions;
-                if (role === 'anne') {
-                    filteredSubs = submissions.filter(s => s.category === 'Mutfak & Alışveriş' || s.category === 'Günün Yemek Menüsü & Öneri' || mySubIds.includes(s.id));
+                // Centralized privacy & role filtering (Works across all devices!)
+                let filteredSubs = [];
+                if (role === 'admin') {
+                    filteredSubs = submissions; // Admin sees all
+                } else if (role === 'anne') {
+                    // Anne sees only her own requests OR Günün Yemek Menüsü & Öneri (private requests to Baba are hidden from Anne)
+                    filteredSubs = submissions.filter(s =>
+                        s.name === 'Anne' ||
+                        s.category === 'Günün Yemek Menüsü & Öneri'
+                    );
                 } else if (role === 'baba') {
-                    filteredSubs = submissions.filter(s => s.category === 'Mutfak & Alışveriş' || s.category === 'Tamirat & Tesisat' || s.category === 'Ulaşım & Lojistik' || mySubIds.includes(s.id));
+                    // Baba sees only his own requests OR Tamirat & Tesisat / Ulaşım & Lojistik
+                    filteredSubs = submissions.filter(s =>
+                        s.name === 'Baba' ||
+                        s.category === 'Tamirat & Tesisat' ||
+                        s.category === 'Ulaşım & Lojistik'
+                    );
                 } else if (role === 'kardes') {
-                    filteredSubs = submissions.filter(s => mySubIds.includes(s.id));
+                    // Kardeş only sees requests authored by Kardeş
+                    filteredSubs = submissions.filter(s => s.name === 'Kardeş');
                 }
-                // admin sees all
 
                 if (filteredSubs.length === 0) {
                     box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.95rem; text-align: center; padding: 2rem;">Henüz aktif bir talep bulunmuyor veya sistem uyanıyor... ☕</p>';
@@ -845,9 +849,11 @@
                     }
 
                     const responsible = categoryResponsibles[sub.category] || 'Yönetici';
-                    const canResolve = (role === 'anne' && (sub.category === 'Mutfak & Alışveriş' || sub.category === 'Günün Yemek Menüsü & Öneri')) ||
-                                       (role === 'baba' && (sub.category === 'Mutfak & Alışveriş' || sub.category === 'Tamirat & Tesisat' || sub.category === 'Ulaşım & Lojistik')) ||
-                                       (role === 'admin');
+                    
+                    // Permission to resolve/reject and write note
+                    const canManage = (role === 'admin') ||
+                                      (role === 'anne' && (sub.category === 'Günün Yemek Menüsü & Öneri')) ||
+                                      (role === 'baba' && (sub.category === 'Tamirat & Tesisat' || sub.category === 'Ulaşım & Lojistik'));
 
                     return `
                         <div class="notification-item">
@@ -863,11 +869,15 @@
                                 </div>
                             </div>
                             <p style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6;">${escapeHtml(sub.message)}</p>
-                            ${sub.adminNote ? `<div class="admin-note-box">👑 <strong>Yönetici Notu:</strong> ${escapeHtml(sub.adminNote)}</div>` : ''}
+                            ${sub.adminNote ? `<div class="admin-note-box">👑 <strong>Yönetici / Sorumlu Notu:</strong> ${escapeHtml(sub.adminNote)}</div>` : ''}
                             
-                            ${canResolve && sub.status === 'Beklemede' ? `
-                                <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
-                                    <button class="admin-btn btn-approve" onclick="quickResolve('${sub.id}')">✅ Çözüldü / Alındı İşaretle</button>
+                            ${canManage ? `
+                                <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                                    <input type="text" id="note_${sub.id}" class="admin-note-input" value="${escapeHtml(sub.adminNote || '')}" placeholder="Cevap veya yönetim notu yazın...">
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button class="admin-btn btn-approve" onclick="resolveRequest('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>
+                                        <button class="admin-btn btn-reject" onclick="resolveRequest('${sub.id}', 'Reddedildi')">❌ Reddet</button>
+                                    </div>
                                 </div>
                             ` : ''}
 
@@ -880,16 +890,22 @@
             }
         }
 
-        async function quickResolve(id) {
+        async function resolveRequest(id, status) {
+            const noteInput = document.getElementById('note_' + id);
+            const adminNote = noteInput ? noteInput.value : '';
+
             try {
                 const res = await fetch('/api/update-status', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, status: 'Çözüldü / Onaylandı', adminNote: 'Sorumlu aile üyesi tarafından çözüldü olarak işaretlendi.' })
+                    body: JSON.stringify({ id, status, adminNote })
                 });
                 const data = await res.json();
                 if (data.success) {
                     loadClientNotifications();
+                    if (checkAdminAuth()) loadSubmissions();
+                } else {
+                    alert('İşlem başarısız.');
                 }
             } catch (e) {
                 alert('Bağlantı hatası!');
@@ -962,27 +978,6 @@
             showClientSite();
         }
 
-        async function updateStatus(id, status) {
-            const noteInput = document.getElementById('note_' + id);
-            const adminNote = noteInput ? noteInput.value : '';
-
-            try {
-                const res = await fetch('/api/update-status', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, status, adminNote })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    loadSubmissions();
-                } else {
-                    alert('Durum güncellenemedi.');
-                }
-            } catch (e) {
-                alert('Sunucu bağlantı hatası!');
-            }
-        }
-
         async function loadSubmissions() {
             const listEl = document.getElementById('submissionsList');
             try {
@@ -1012,8 +1007,8 @@
                             </div>
 
                             <div class="admin-actions">
-                                <button class="admin-btn btn-approve" onclick="updateStatus('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>
-                                <button class="admin-btn btn-reject" onclick="updateStatus('${sub.id}', 'Reddedildi')">❌ Reddet</button>
+                                <button class="admin-btn btn-approve" onclick="resolveRequest('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>
+                                <button class="admin-btn btn-reject" onclick="resolveRequest('${sub.id}', 'Reddedildi')">❌ Reddet</button>
                             </div>
                         </div>
                     `;
@@ -1034,6 +1029,18 @@
                 roleSelect.value = savedRole;
             }
             applyRoleUI(savedRole);
+
+            // Auto-sync interval across devices (polling every 3 seconds for real-time update)
+            setInterval(() => {
+                const currentRole = localStorage.getItem('kodanes_active_role') || 'misafir';
+                if (currentRole !== 'misafir') {
+                    loadClientNotifications();
+                    const adminSec = document.getElementById('adminSection');
+                    if (adminSec && adminSec.classList.contains('active')) {
+                        loadSubmissions();
+                    }
+                }
+            }, 3000);
         });
     </script>
 </body>
