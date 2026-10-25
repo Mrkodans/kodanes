@@ -789,6 +789,11 @@
 
         // Load Client Notifications with Cross-Device Centralized Server Data & Privacy Filtering
         async function loadClientNotifications() {
+            // Prevent re-render flicker while user is typing
+            const activeEl = document.activeElement;
+            if (activeEl && (activeEl.classList.contains('admin-note-input') || activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+                return;
+            }
             const role = localStorage.getItem('kodanes_active_role') || 'misafir';
             const box = document.getElementById('clientNotifications');
             const activeInput = document.activeElement;
@@ -853,8 +858,8 @@
                     
                     // Permission to resolve/reject and write note
                     const canManage = (role === 'admin') ||
-                                      (role === 'anne' && (sub.category === 'Günün Yemek Menüsü & Öneri')) ||
-                                      (role === 'baba' && (sub.category === 'Tamirat & Tesisat' || sub.category === 'Ulaşım & Lojistik'));
+                                      (role === 'anne' && (sub.category === 'Günün Yemek Menüsü & Öneri' || sub.category === 'Mutfak & Alışveriş')) ||
+                                      (role === 'baba' && (sub.category === 'Tamirat & Tesisat' || sub.category === 'Ulaşım & Lojistik' || sub.category === 'Mutfak & Alışveriş'));
 
                     return `
                         <div class="notification-item">
@@ -878,7 +883,7 @@
                                     <div style="display: flex; gap: 0.5rem;">
                                         ${sub.status !== 'Reddedildi' ? `<button class="admin-btn btn-approve" onclick="resolveRequest('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>` : ''}
                                         ${sub.status !== 'Çözüldü / Onaylandı' ? `<button class="admin-btn btn-reject" onclick="resolveRequest('${sub.id}', 'Reddedildi')">❌ Reddet</button>` : ''}
-                                        <button class="admin-btn" style="background: rgba(248, 113, 113, 0.15); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.3); font-size: 0.85rem;" onclick="deleteSubmission('${sub.id}')">🗑️ Sil</button>
+                                        
                                     </div>
                                 </div>
                             ` : ''}
@@ -989,6 +994,11 @@
         }
 
         async function loadSubmissions() {
+            // Prevent re-render flicker while admin is typing
+            const activeEl = document.activeElement;
+            if (activeEl && (activeEl.classList.contains('admin-note-input') || activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+                return;
+            }
             const listEl = document.getElementById('submissionsList');
             try {
                 const res = await fetch('/api/submissions');
