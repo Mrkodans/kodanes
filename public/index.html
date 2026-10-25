@@ -500,9 +500,9 @@
                 <option value="alikemal">👦 AliKemal (Kardeş)</option>
                 <option value="ecrin">👧 Ecrin (Kardeş)</option>
                 <option value="derya">👧 Derya (Kardeş)</option>
-                <option value="nilufer">👩 Nilüfer (Anne)</option>
-                <option value="mahmut">👨 Mahmut (Baba)</option>
-                <option value="admin">👑 Bedirhan (Yönetici)</option>
+                <option value="nilufer">👩 Nilüfer</option>
+                <option value="mahmut">👨 Mahmut</option>
+                <option value="admin">👑 Bedirhan</option>
             </select>
             <button class="btn-base" id="adminNavBtn" onclick="handleAdminNavClick()" style="display: none;">🔐 Yönetici Paneli</button>
             <button class="btn-base" onclick="toggleTheme()">☀️ / 🌙</button>
@@ -575,11 +575,11 @@
                     <select id="category" required>
                         <option value="">Seçiniz...</option>
                         <option value="IT & Teknik Destek">IT & Teknik Destek (Sorumlu: 👑 Bedirhan)</option>
-                        <option value="Tamirat & Tesisat">Tamirat & Tesisat (Sorumlu: 👨 Baba)</option>
-                        <option value="Mutfak & Alışveriş">Mutfak & Alışveriş (Sorumlu: 👨 Baba & 👩 Anne)</option>
-                        <option value="Günün Yemek Menüsü & Öneri">Günün Yemek Menüsü & Öneri (Sorumlu: 👩 Anne)</option>
-                        <option value="Ulaşım & Lojistik">Ulaşım & Lojistik (Sorumlu: 👨 Baba)</option>
-                        <option value="Resmi Şikayet & Sitem">Resmi Şikayet & Sitem (Sorumlu: 👑 Yönetici)</option>
+                        <option value="Tamirat & Tesisat">Tamirat & Tesisat (Sorumlu: 👨 Mahmut)</option>
+                        <option value="Mutfak & Alışveriş">Mutfak & Alışveriş (Sorumlu: 👨 Mahmut & 👩 Nilüfer)</option>
+                        <option value="Günün Yemek Menüsü & Öneri">Günün Yemek Menüsü & Öneri (Sorumlu: 👩 Nilüfer)</option>
+                        <option value="Ulaşım & Lojistik">Ulaşım & Lojistik (Sorumlu: 👨 Mahmut)</option>
+                        <option value="Resmi Şikayet & Sitem">Resmi Şikayet & Sitem (Sorumlu: 👑 Bedirhan)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -603,7 +603,7 @@
     <!-- ADMIN VIEW -->
     <div class="container admin-section" id="adminSection">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
-            <h1>👑 Yönetici Paneli (Admin - Bedirhan)</h1>
+            <h1>👑 Bedirhan Yönetici Paneli</h1>
             <button class="btn-base" onclick="logoutAdmin()" style="border-color: var(--danger); color: var(--danger);">Çıkış Yap</button>
         </div>
         <p class="subtitle">Bu alana yalnızca yetkili yönetici (Bedirhan) erişebilir. Aile bireylerinden gelen talepleri onaylayabilir, çözebilir veya reddedebilirsiniz.</p>
@@ -642,13 +642,13 @@
     </div>
 
     <script>
-        const categoryResponsibles = {
-            "IT & Teknik Destek": "👑 Bedirhan (Yönetici)",
-            "Tamirat & Tesisat": "👨 Mahmut (Baba)",
+                const categoryResponsibles = {
+            "IT & Teknik Destek": "👑 Bedirhan",
+            "Tamirat & Tesisat": "👨 Mahmut",
             "Mutfak & Alışveriş": "👨 Mahmut & 👩 Nilüfer",
-            "Resmi Şikayet & Sitem": "👑 Yönetici / Meclis",
-            "Ulaşım & Lojistik": "👨 Mahmut (Baba)",
-            "Günün Yemek Menüsü & Öneri": "👩 Nilüfer (Anne)"
+            "Resmi Şikayet & Sitem": "👑 Bedirhan",
+            "Ulaşım & Lojistik": "👨 Mahmut",
+            "Günün Yemek Menüsü & Öneri": "👩 Nilüfer"
         };
 
         // Theme Toggle
@@ -720,15 +720,15 @@
                 statsGrid.style.display = 'none';
                 mainTitle.innerText = 'Kodanes Misafir Portalı';
                 mainSubtitle.innerText = 'Evimize hoş geldiniz! Günün yemek menüsüne ve misafir Wi-Fi bilgilerine buradan erişebilirsiniz.';
-            } else if (role === 'anne') {
-                authorName = 'Anne';
-                mainTitle.innerText = 'Anne Aile Masası (Mutfak & Ev Amiri)';
-                mainSubtitle.innerText = 'Mutfak alışverişleri ve günün yemek menüsü yönetim merkezi.';
+            }             } else if (role === 'nilufer' || role === 'anne') {
+                authorName = 'Nilüfer';
+                mainTitle.innerText = 'Nilüfer - Mutfak & Ev Amiri Masası';
+                mainSubtitle.innerText = 'Mutfak alışverişleri, günün yemek menüsü ve ev içi yönetim merkezi.';
                 changeMenuBtn.style.display = 'inline-block';
-            } else if (role === 'baba') {
-                authorName = 'Baba';
-                mainTitle.innerText = 'Baba Lojistik & Tesisat Masası';
-                mainSubtitle.innerText = 'Ev içi tamirat, tesisat, ulaşım ve alışveriş görev takip merkezi.';
+            } else if (role === 'mahmut' || role === 'baba') {
+                authorName = 'Mahmut';
+                mainTitle.innerText = 'Mahmut - Lojistik & Tesisat Masası';
+                mainSubtitle.innerText = 'Ev içi tamirat, tesisat, ulaşım ve mutfak alışverişleri görev takip merkezi.';   
             } else if (role === 'alikemal') {
                 authorName = 'AliKemal';
                 mainTitle.innerText = 'AliKemal - Kardeş Destek Masası';
@@ -749,7 +749,7 @@
                 authorName = 'Yönetici (Bedirhan)';
                 adminNavBtn.style.display = 'inline-block';
                 changeMenuBtn.style.display = 'inline-block';
-                mainTitle.innerText = 'Yönetici Tam Yetki Görünümü';
+                mainTitle.innerText = 'Bedirhan - Yönetici Tam Yetki Görünümü';
                 mainSubtitle.innerText = 'Tüm ev sistemleri kontrol altında.';
             }
 
@@ -785,7 +785,7 @@
                     document.getElementById('contactForm').reset();
                     
                     const role = localStorage.getItem('kodanes_active_role') || 'alikemal';
-                    let authorName = role === 'nilufer' ? 'Anne' : role === 'mahmut' ? 'Baba' : role === 'admin' ? 'Yönetici (Bedirhan)' : role === 'alikemal' ? 'AliKemal' : role === 'ecrin' ? 'Ecrin' : role === 'derya' ? 'Derya' : 'Kardeş';
+                    let authorName = (role === 'nilufer' || role === 'anne') ? 'Nilüfer' : (role === 'mahmut' || role === 'baba') ? 'Mahmut' : role === 'admin' ? 'Yönetici (Bedirhan)' : role === 'alikemal' ? 'AliKemal' : role === 'ecrin' ? 'Ecrin' : role === 'derya' ? 'Derya' : 'Kardeş';
                     document.getElementById('name').value = authorName;
 
                     loadClientNotifications();
@@ -832,16 +832,18 @@
                 let filteredSubs = [];
                 if (role === 'admin') {
                     filteredSubs = submissions; // Admin sees all
-                } else if (role === 'anne') {
-                    // Anne sees her own requests, Günün Yemek Menüsü & Öneri, and shared Mutfak & Alışveriş
+                }                 } else if (role === 'nilufer' || role === 'anne') {
+                    // Nilüfer sees her own requests, Günün Yemek Menüsü & Öneri, and shared Mutfak & Alışveriş
                     filteredSubs = submissions.filter(s =>
+                        s.name === 'Nilüfer' ||
                         s.name === 'Anne' ||
                         s.category === 'Günün Yemek Menüsü & Öneri' ||
                         s.category === 'Mutfak & Alışveriş'
                     );
-                } else if (role === 'baba') {
-                    // Baba sees his own requests, Tamirat & Tesisat, Ulaşım & Lojistik, and shared Mutfak & Alışveriş
+                } else if (role === 'mahmut' || role === 'baba') {
+                    // Mahmut sees his own requests, Tamirat & Tesisat, Ulaşım & Lojistik, and shared Mutfak & Alışveriş
                     filteredSubs = submissions.filter(s =>
+                        s.name === 'Mahmut' ||
                         s.name === 'Baba' ||
                         s.category === 'Tamirat & Tesisat' ||
                         s.category === 'Ulaşım & Lojistik' ||
@@ -872,8 +874,8 @@
                     
                     // Permission to resolve/reject and write note
                     const canManage = (role === 'admin') ||
-                                      (role === 'nilufer' && (sub.category === 'Günün Yemek Menüsü & Öneri' || sub.category === 'Mutfak & Alışveriş')) ||
-                                      (role === 'mahmut' && (sub.category === 'Tamirat & Tesisat' || sub.category === 'Ulaşım & Lojistik' || sub.category === 'Mutfak & Alışveriş'));
+                                      ((role === 'nilufer' || role === 'anne') && (sub.category === 'Günün Yemek Menüsü & Öneri' || sub.category === 'Mutfak & Alışveriş')) ||
+                                      ((role === 'mahmut' || role === 'baba') && (sub.category === 'Tamirat & Tesisat' || sub.category === 'Ulaşım & Lojistik' || sub.category === 'Mutfak & Alışveriş'));
 
                     return `
                         <div class="notification-item">
@@ -1036,7 +1038,7 @@
                             <p style="font-size: 0.75rem; opacity: 0.6;">📅 ${sub.date}</p>
                             
                             <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;">
-                                <label style="font-size: 0.85rem; font-weight: 600;">👑 Yönetici Notu / Cevap Yaz:</label>
+                                <label style="font-size: 0.85rem; font-weight: 600;">👑 Bedirhan Notu / Cevap Yaz:</label>
                                 <input type="text" id="note_${sub.id}" class="admin-note-input" value="${escapeHtml(sub.adminNote || '')}" placeholder="Örn: Modemi resetledim, akşam ekmek alacağım...">
                             </div>
 
