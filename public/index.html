@@ -642,7 +642,7 @@
     </div>
 
     <script>
-                const categoryResponsibles = {
+        const categoryResponsibles = {
             "IT & Teknik Destek": "👑 Bedirhan",
             "Tamirat & Tesisat": "👨 Mahmut",
             "Mutfak & Alışveriş": "👨 Mahmut & 👩 Nilüfer",
@@ -712,15 +712,16 @@
             adminNavBtn.style.display = 'none';
             changeMenuBtn.style.display = 'none';
 
-            let authorName = 'Kardeş';
+            let authorName = 'Misafir';
             if (role === 'misafir') {
+                authorName = 'Misafir';
                 guestView.style.display = 'block';
                 notificationsContainer.style.display = 'none';
                 formContainer.style.display = 'none';
                 statsGrid.style.display = 'none';
                 mainTitle.innerText = 'Kodanes Misafir Portalı';
                 mainSubtitle.innerText = 'Evimize hoş geldiniz! Günün yemek menüsüne ve misafir Wi-Fi bilgilerine buradan erişebilirsiniz.';
-            }             } else if (role === 'nilufer' || role === 'anne') {
+            } else if (role === 'nilufer' || role === 'anne') {
                 authorName = 'Nilüfer';
                 mainTitle.innerText = 'Nilüfer - Mutfak & Ev Amiri Masası';
                 mainSubtitle.innerText = 'Mutfak alışverişleri, günün yemek menüsü ve ev içi yönetim merkezi.';
@@ -728,7 +729,7 @@
             } else if (role === 'mahmut' || role === 'baba') {
                 authorName = 'Mahmut';
                 mainTitle.innerText = 'Mahmut - Lojistik & Tesisat Masası';
-                mainSubtitle.innerText = 'Ev içi tamirat, tesisat, ulaşım ve mutfak alışverişleri görev takip merkezi.';   
+                mainSubtitle.innerText = 'Ev içi tamirat, tesisat, ulaşım ve mutfak alışverişleri görev takip merkezi.';
             } else if (role === 'alikemal') {
                 authorName = 'AliKemal';
                 mainTitle.innerText = 'AliKemal - Kardeş Destek Masası';
@@ -746,7 +747,7 @@
                 mainTitle.innerText = 'Kardeş Destek Masası';
                 mainSubtitle.innerText = 'İstekler, şikayetler ve meclis talepleri.';
             } else if (role === 'admin') {
-                authorName = 'Yönetici (Bedirhan)';
+                authorName = 'Bedirhan';
                 adminNavBtn.style.display = 'inline-block';
                 changeMenuBtn.style.display = 'inline-block';
                 mainTitle.innerText = 'Bedirhan - Yönetici Tam Yetki Görünümü';
@@ -783,9 +784,9 @@
                 if (data.success) {
                     document.getElementById('formSuccess').style.display = 'block';
                     document.getElementById('contactForm').reset();
-                    
+
                     const role = localStorage.getItem('kodanes_active_role') || 'alikemal';
-                    let authorName = (role === 'nilufer' || role === 'anne') ? 'Nilüfer' : (role === 'mahmut' || role === 'baba') ? 'Mahmut' : role === 'admin' ? 'Yönetici (Bedirhan)' : role === 'alikemal' ? 'AliKemal' : role === 'ecrin' ? 'Ecrin' : role === 'derya' ? 'Derya' : 'Kardeş';
+                    let authorName = (role === 'nilufer' || role === 'anne') ? 'Nilüfer' : (role === 'mahmut' || role === 'baba') ? 'Mahmut' : role === 'admin' ? 'Bedirhan' : role === 'alikemal' ? 'AliKemal' : role === 'ecrin' ? 'Ecrin' : role === 'derya' ? 'Derya' : role === 'misafir' ? 'Misafir' : 'Kardeş';
                     document.getElementById('name').value = authorName;
 
                     loadClientNotifications();
@@ -832,7 +833,7 @@
                 let filteredSubs = [];
                 if (role === 'admin') {
                     filteredSubs = submissions; // Admin sees all
-                }                 } else if (role === 'nilufer' || role === 'anne') {
+                } else if (role === 'nilufer' || role === 'anne') {
                     // Nilüfer sees her own requests, Günün Yemek Menüsü & Öneri, and shared Mutfak & Alışveriş
                     filteredSubs = submissions.filter(s =>
                         s.name === 'Nilüfer' ||
@@ -870,8 +871,8 @@
                         badgeText = '❌ Reddedildi';
                     }
 
-                    const responsible = categoryResponsibles[sub.category] || 'Yönetici';
-                    
+                    const responsible = categoryResponsibles[sub.category] || 'Bedirhan';
+
                     // Permission to resolve/reject and write note
                     const canManage = (role === 'admin') ||
                                       ((role === 'nilufer' || role === 'anne') && (sub.category === 'Günün Yemek Menüsü & Öneri' || sub.category === 'Mutfak & Alışveriş')) ||
@@ -881,7 +882,7 @@
                         <div class="notification-item">
                             <div class="notif-header">
                                 <div>
-                                    <strong style="font-size: 1.05rem;">${escapeHtml(sub.category)}</strong> 
+                                    <strong style="font-size: 1.05rem;">${escapeHtml(sub.category)}</strong>
                                     <span style="font-size: 0.9rem; color: var(--text-muted);">(${escapeHtml(sub.name)})</span>
                                 </div>
                                 <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
@@ -891,15 +892,14 @@
                                 </div>
                             </div>
                             <p style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6;">${escapeHtml(sub.message)}</p>
-                            ${sub.adminNote ? `<div class="admin-note-box">👑 <strong>Yönetici / Sorumlu Notu:</strong> ${escapeHtml(sub.adminNote)}</div>` : ''}
-                            
+                            ${sub.adminNote ? `<div class="admin-note-box">👑 <strong>Sorumlu Notu:</strong> ${escapeHtml(sub.adminNote)}</div>` : ''}
+
                             ${canManage ? `
                                 <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
                                     <input type="text" id="note_${sub.id}" class="admin-note-input" value="${escapeHtml(sub.adminNote || '')}" placeholder="Cevap veya yönetim notu yazın...">
                                     <div style="display: flex; gap: 0.5rem;">
                                         ${sub.status !== 'Reddedildi' ? `<button class="admin-btn btn-approve" onclick="resolveRequest('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>` : ''}
                                         ${sub.status !== 'Çözüldü / Onaylandı' ? `<button class="admin-btn btn-reject" onclick="resolveRequest('${sub.id}', 'Reddedildi')">❌ Reddet</button>` : ''}
-                                        
                                     </div>
                                 </div>
                             ` : ''}
@@ -908,14 +908,15 @@
                         </div>
                     `;
                 }).join('');
-            if (activeId) {
-                const el = document.getElementById(activeId);
-                if (el) {
-                    el.value = activeVal;
-                    el.focus();
-                    el.setSelectionRange(el.value.length, el.value.length);
+
+                if (activeId) {
+                    const el = document.getElementById(activeId);
+                    if (el) {
+                        el.value = activeVal;
+                        el.focus();
+                        el.setSelectionRange(el.value.length, el.value.length);
+                    }
                 }
-            }
             } catch (e) {
                 box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.95rem; text-align: center; padding: 2rem;">Henüz aktif bir talep bulunmuyor veya sistem uyanıyor... ☕</p>';
             }
@@ -1010,7 +1011,6 @@
         }
 
         async function loadSubmissions() {
-            // Prevent re-render flicker while admin is typing
             const activeEl = document.activeElement;
             if (activeEl && (activeEl.classList.contains('admin-note-input') || activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
                 return;
@@ -1026,7 +1026,7 @@
                 }
 
                 listEl.innerHTML = submissions.map(sub => {
-                    const responsible = categoryResponsibles[sub.category] || 'Yönetici';
+                    const responsible = categoryResponsibles[sub.category] || 'Bedirhan';
                     return `
                         <div class="submission-item">
                             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
@@ -1036,10 +1036,10 @@
                             <p style="font-size: 0.9rem; opacity: 0.85;">İlgili Sorumlu: <strong>${escapeHtml(responsible)}</strong> | Aciliyet: <strong>${escapeHtml(sub.urgency)}</strong></p>
                             <p style="background: var(--card-bg); padding: 1rem; border-radius: 0.75rem; border: 1px solid var(--border-color); font-size: 0.95rem;">💬 ${escapeHtml(sub.message)}</p>
                             <p style="font-size: 0.75rem; opacity: 0.6;">📅 ${sub.date}</p>
-                            
+
                             <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;">
-                                <label style="font-size: 0.85rem; font-weight: 600;">👑 Bedirhan Notu / Cevap Yaz:</label>
-                                <input type="text" id="note_${sub.id}" class="admin-note-input" value="${escapeHtml(sub.adminNote || '')}" placeholder="Örn: Modemi resetledim, akşam ekmek alacağım...">
+                                <label style="font-size: 0.85rem; font-weight: 600;">👑 Sorumlu Notu / Cevap Yaz:</label>
+                                <input type="text" id="note_${sub.id}" class="admin-note-input" value="${escapeHtml(sub.adminNote || '')}" placeholder="Örn: Modemi resetledim...">
                             </div>
 
                             <div class="admin-actions">
@@ -1055,7 +1055,6 @@
             }
         }
 
-        
         async function deleteSubmission(id) {
             if (!confirm('Bu talebi silmek istediğinize emin misiniz?')) return;
             try {
@@ -1088,7 +1087,7 @@
             }
             applyRoleUI(savedRole);
 
-            // Auto-sync interval across devices (polling every 3 seconds for real-time update)
+            // Auto-sync interval across devices
             setInterval(() => {
                 const currentRole = localStorage.getItem('kodanes_active_role') || 'misafir';
                 if (currentRole !== 'misafir') {
