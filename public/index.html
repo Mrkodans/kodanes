@@ -718,20 +718,16 @@
                 statsGrid.style.display = 'none';
                 mainTitle.innerText = 'Kodanes Misafir Portalı';
                 mainSubtitle.innerText = 'Evimize hoş geldiniz! Günün yemek menüsüne ve misafir Wi-Fi bilgilerine buradan erişebilirsiniz.';
-            else if (role === 'anne') {
-                    // Anne sees only her own requests OR Günün Yemek Menüsü & Öneri
-                    filteredSubs = submissions.filter(s =>
-                        s.name === 'Anne' ||
-                        s.category === 'Günün Yemek Menüsü & Öneri'
-                    );
-                else if (role === 'baba') {
-                    // Baba sees only his own requests OR Tamirat & Tesisat / Ulaşım & Lojistik
-                    filteredSubs = submissions.filter(s =>
-                        s.name === 'Baba' ||
-                        s.category === 'Tamirat & Tesisat' ||
-                        s.category === 'Ulaşım & Lojistik'
-                    );
-                } else if (role === 'kardes') {
+            } else if (role === 'anne') {
+                authorName = 'Anne';
+                mainTitle.innerText = 'Anne Aile Masası (Mutfak & Ev Amiri)';
+                mainSubtitle.innerText = 'Mutfak alışverişleri ve günün yemek menüsü yönetim merkezi.';
+                changeMenuBtn.style.display = 'inline-block';
+            } else if (role === 'baba') {
+                authorName = 'Baba';
+                mainTitle.innerText = 'Baba Lojistik & Tesisat Masası';
+                mainSubtitle.innerText = 'Ev içi tamirat, tesisat, ulaşım ve alışveriş görev takip merkezi.';
+            } else if (role === 'kardes') {
                 authorName = 'Kardeş';
                 mainTitle.innerText = 'Kardeş Destek Masası';
                 mainSubtitle.innerText = 'İstekler, şikayetler ve meclis talepleri.';
@@ -744,7 +740,7 @@
             }
 
             if (nameInput) nameInput.value = authorName;
-            if (authorLockedBadge) authorLockedBadge.innerText = `👤 ${authorName} (Kilitli)`;
+            if (authorLockedBadge) authorLockedBadge.innerText = '👤 ' + authorName + ' (Kilitli)';
 
             const savedMenu = localStorage.getItem('kodanes_daily_menu');
             if (savedMenu) {
