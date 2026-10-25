@@ -1,0 +1,44 @@
+{
+  "submissions": [
+    {
+      "id": "sub_1792947828235_wzgvd",
+      "name": "Ali",
+      "category": "IT & Teknik Destek",
+      "urgency": "🔴 Kritik",
+      "message": "Ali'nin test raporu - modem çalışmıyor",
+      "date": "25.10.2026 20:03:48",
+      "status": "Beklemede",
+      "adminNote": ""
+    },
+    {
+      "id": "sub_1792947828268_971my",
+      "name": "Derya",
+      "category": "Resmi Şikayet & Sitem",
+      "urgency": "🟡 Orta",
+      "message": "Derya'nın test raporu - televizyon kumandası kayıp",
+      "date": "25.10.2026 20:03:48",
+      "status": "Beklemede",
+      "adminNote": ""
+    },
+    {
+      "id": "sub_1792948155758_03vqg",
+      "name": "AliKemal",
+      "category": "IT & Teknik Destek",
+      "urgency": "🔴 Kritik",
+      "message": "AliKemal'in test raporu - modem çalışmıyor",
+      "date": "25.10.2026 20:09:15",
+      "status": "Beklemede",
+      "adminNote": ""
+    },
+    {
+      "id": "sub_1792948155790_i4ef5",
+      "name": "Derya",
+      "category": "Resmi Şikayet & Sitem",
+      "urgency": "🟡 Orta",
+      "message": "Derya'nın test raporu - televizyon kumandası kayıp",
+      "date": "25.10.2026 20:09:15",
+      "status": "Beklemede",
+      "adminNote": ""
+    }
+  ]
+}

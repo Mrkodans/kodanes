@@ -497,8 +497,7 @@
         <div class="header-actions">
             <select id="roleSelector" class="role-select" onchange="switchUserRole(this.value)">
                 <option value="misafir">👤 Kimsin? (Misafir)</option>
-                <option value="ali">👦 Ali (Kardeş)</option>
-                <option value="kemal">👦 Kemal (Kardeş)</option>
+                <option value="alikemal">👦 AliKemal (Kardeş)</option>
                 <option value="ecrin">👧 Ecrin (Kardeş)</option>
                 <option value="derya">👧 Derya (Kardeş)</option>
                 <option value="nilufer">👩 Nilüfer (Anne)</option>
@@ -730,6 +729,18 @@
                 authorName = 'Baba';
                 mainTitle.innerText = 'Baba Lojistik & Tesisat Masası';
                 mainSubtitle.innerText = 'Ev içi tamirat, tesisat, ulaşım ve alışveriş görev takip merkezi.';
+            } else if (role === 'alikemal') {
+                authorName = 'AliKemal';
+                mainTitle.innerText = 'AliKemal - Kardeş Destek Masası';
+                mainSubtitle.innerText = 'Kardeşler ortak talep ve rapor merkezi. Tüm kardeşlerin attığı raporları buradan görebilirsiniz.';
+            } else if (role === 'ecrin') {
+                authorName = 'Ecrin';
+                mainTitle.innerText = 'Ecrin - Kardeş Destek Masası';
+                mainSubtitle.innerText = 'Kardeşler ortak talep ve rapor merkezi. Tüm kardeşlerin attığı raporları buradan görebilirsiniz.';
+            } else if (role === 'derya') {
+                authorName = 'Derya';
+                mainTitle.innerText = 'Derya - Kardeş Destek Masası';
+                mainSubtitle.innerText = 'Kardeşler ortak talep ve rapor merkezi. Tüm kardeşlerin attığı raporları buradan görebilirsiniz.';
             } else if (role === 'kardes') {
                 authorName = 'Kardeş';
                 mainTitle.innerText = 'Kardeş Destek Masası';
@@ -773,8 +784,8 @@
                     document.getElementById('formSuccess').style.display = 'block';
                     document.getElementById('contactForm').reset();
                     
-                    const role = localStorage.getItem('kodanes_active_role') || 'ali';
-                    let authorName = role === 'nilufer' ? 'Nilüfer' : role === 'mahmut' ? 'Mahmut' : role === 'admin' ? 'Bedirhan (Yönetici)' : role === 'kemal' ? 'Kemal' : role === 'ecrin' ? 'Ecrin' : role === 'derya' ? 'Derya' : 'Ali';
+                    const role = localStorage.getItem('kodanes_active_role') || 'alikemal';
+                    let authorName = role === 'nilufer' ? 'Anne' : role === 'mahmut' ? 'Baba' : role === 'admin' ? 'Yönetici (Bedirhan)' : role === 'alikemal' ? 'AliKemal' : role === 'ecrin' ? 'Ecrin' : role === 'derya' ? 'Derya' : 'Kardeş';
                     document.getElementById('name').value = authorName;
 
                     loadClientNotifications();
@@ -836,9 +847,9 @@
                         s.category === 'Ulaşım & Lojistik' ||
                         s.category === 'Mutfak & Alışveriş'
                     );
-                } else if (role === 'kardes') {
-                    // Kardeş only sees requests authored by Kardeş
-                    filteredSubs = submissions.filter(s => s.name === 'Kardeş');
+                } else if (['alikemal', 'ecrin', 'derya', 'kardes'].includes(role)) {
+                    // All siblings see all sibling reports/requests
+                    filteredSubs = submissions.filter(s => ['AliKemal', 'Ali', 'Kemal', 'Ecrin', 'Derya', 'Kardeş'].includes(s.name));
                 }
 
                 if (filteredSubs.length === 0) {

@@ -1,7 +1,7 @@
 {
-  "name": "kodanes",
+  "name": "agency-web-platform",
   "version": "1.0.0",
-  "description": "Kodanes Full-stack Web Platform with Node.js backend and Admin approval system",
+  "description": "Kodanes Aile Portal\u0131",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
