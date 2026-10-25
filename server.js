@@ -99,6 +99,26 @@ app.post('/api/login', (req, res) => {
     res.status(401).json({ success: false, error: 'Hatalı şifre!' });
 });
 
+
+// API: Delete Submission
+app.post('/api/delete-submission', (req, res) => {
+    const { id } = req.body;
+    if (!id) {
+        return res.status(400).json({ error: 'Geçersiz ID.' });
+    }
+
+    const db = getDB();
+    const initialLen = db.submissions.length;
+    db.submissions = db.submissions.filter(sub => sub.id !== id);
+
+    if (db.submissions.length === initialLen) {
+        return res.status(404).json({ error: 'Talep bulunamadı.' });
+    }
+
+    saveDB(db);
+    res.json({ success: true });
+});
+
 app.listen(PORT, () => {
     console.log(`Kodanes Aile Meclisi server running at http://localhost:${PORT}`);
 });

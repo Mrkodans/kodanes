@@ -791,6 +791,9 @@
         async function loadClientNotifications() {
             const role = localStorage.getItem('kodanes_active_role') || 'misafir';
             const box = document.getElementById('clientNotifications');
+            const activeInput = document.activeElement;
+            const activeId = (activeInput && activeInput.id && activeInput.id.startsWith('note_')) ? activeInput.id : null;
+            const activeVal = activeId ? activeInput.value : '';
 
             if (role === 'misafir') {
                 box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.95rem; text-align: center; padding: 1.5rem;">Misafir modunda bildirim listesi görüntülenmez.</p>';
@@ -811,17 +814,19 @@
                 if (role === 'admin') {
                     filteredSubs = submissions; // Admin sees all
                 } else if (role === 'anne') {
-                    // Anne sees only her own requests OR Günün Yemek Menüsü & Öneri (private requests to Baba are hidden from Anne)
+                    // Anne sees her own requests, Günün Yemek Menüsü & Öneri, and shared Mutfak & Alışveriş
                     filteredSubs = submissions.filter(s =>
                         s.name === 'Anne' ||
-                        s.category === 'Günün Yemek Menüsü & Öneri'
+                        s.category === 'Günün Yemek Menüsü & Öneri' ||
+                        s.category === 'Mutfak & Alışveriş'
                     );
                 } else if (role === 'baba') {
-                    // Baba sees only his own requests OR Tamirat & Tesisat / Ulaşım & Lojistik
+                    // Baba sees his own requests, Tamirat & Tesisat, Ulaşım & Lojistik, and shared Mutfak & Alışveriş
                     filteredSubs = submissions.filter(s =>
                         s.name === 'Baba' ||
                         s.category === 'Tamirat & Tesisat' ||
-                        s.category === 'Ulaşım & Lojistik'
+                        s.category === 'Ulaşım & Lojistik' ||
+                        s.category === 'Mutfak & Alışveriş'
                     );
                 } else if (role === 'kardes') {
                     // Kardeş only sees requests authored by Kardeş
@@ -871,8 +876,9 @@
                                 <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
                                     <input type="text" id="note_${sub.id}" class="admin-note-input" value="${escapeHtml(sub.adminNote || '')}" placeholder="Cevap veya yönetim notu yazın...">
                                     <div style="display: flex; gap: 0.5rem;">
-                                        <button class="admin-btn btn-approve" onclick="resolveRequest('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>
-                                        <button class="admin-btn btn-reject" onclick="resolveRequest('${sub.id}', 'Reddedildi')">❌ Reddet</button>
+                                        ${sub.status !== 'Reddedildi' ? `<button class="admin-btn btn-approve" onclick="resolveRequest('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>` : ''}
+                                        ${sub.status !== 'Çözüldü / Onaylandı' ? `<button class="admin-btn btn-reject" onclick="resolveRequest('${sub.id}', 'Reddedildi')">❌ Reddet</button>` : ''}
+                                        <button class="admin-btn" style="background: rgba(248, 113, 113, 0.15); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.3); font-size: 0.85rem;" onclick="deleteSubmission('${sub.id}')">🗑️ Sil</button>
                                     </div>
                                 </div>
                             ` : ''}
@@ -881,6 +887,14 @@
                         </div>
                     `;
                 }).join('');
+            if (activeId) {
+                const el = document.getElementById(activeId);
+                if (el) {
+                    el.value = activeVal;
+                    el.focus();
+                    el.setSelectionRange(el.value.length, el.value.length);
+                }
+            }
             } catch (e) {
                 box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.95rem; text-align: center; padding: 2rem;">Henüz aktif bir talep bulunmuyor veya sistem uyanıyor... ☕</p>';
             }
@@ -1003,14 +1017,36 @@
                             </div>
 
                             <div class="admin-actions">
-                                <button class="admin-btn btn-approve" onclick="resolveRequest('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>
-                                <button class="admin-btn btn-reject" onclick="resolveRequest('${sub.id}', 'Reddedildi')">❌ Reddet</button>
+                                ${sub.status !== 'Reddedildi' ? `<button class="admin-btn btn-approve" onclick="resolveRequest('${sub.id}', 'Çözüldü / Onaylandı')">✅ Çözüldü / Onayla</button>` : ''}
+                                ${sub.status !== 'Çözüldü / Onaylandı' ? `<button class="admin-btn btn-reject" onclick="resolveRequest('${sub.id}', 'Reddedildi')">❌ Reddet</button>` : ''}
+                                <button class="admin-btn" style="background: rgba(248, 113, 113, 0.15); color: var(--danger); border: 1px solid rgba(248, 113, 113, 0.3); font-size: 0.85rem;" onclick="deleteSubmission('${sub.id}')">🗑️ Sil</button>
                             </div>
                         </div>
                     `;
                 }).join('');
             } catch (e) {
                 listEl.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">Henüz aktif bir talep bulunmuyor veya sistem uyanıyor... ☕</p>';
+            }
+        }
+
+        
+        async function deleteSubmission(id) {
+            if (!confirm('Bu talebi silmek istediğinize emin misiniz?')) return;
+            try {
+                const res = await fetch('/api/delete-submission', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadClientNotifications();
+                    if (checkAdminAuth()) loadSubmissions();
+                } else {
+                    alert('Silinemedi: ' + (data.error || 'Bilinmeyen hata'));
+                }
+            } catch (e) {
+                alert('Bağlantı hatası!');
             }
         }
 
