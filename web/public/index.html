@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kodanes - AI & Agent Ecosystem</title>
+    <style>
+        :root[data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --input-bg: #0b0f19;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+        :root[data-theme="light"] {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --accent: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.15);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --input-bg: #f1f5f9;
+            --danger: #dc2626;
+            --success: #16a34a;
+            --warning: #d97706;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+        header {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--accent), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+        .btn-base {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 6px -1px var(--accent-glow);
+        }
+        .btn-base:hover {
+            border-color: var(--accent);
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px var(--accent-glow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            background: linear-gradient(to right, var(--accent), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        /* Live Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: var(--input-bg);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .stat-card h3 {
+            font-size: 1.8rem;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+        .stat-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        /* Agent Filter Section */
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            border-left: 4px solid var(--accent);
+            padding-left: 0.5rem;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        .agent-card {
+            background: var(--input-bg);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+        .agent-card h4 {
+            color: var(--accent);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .agent-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        /* Contact Form */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: left;
+        }
+        label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        input, textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        button.submit-btn {
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        button.submit-btn:hover {
+            opacity: 0.9;
+        }
+        .form-success {
+            display: none;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid #22c55e;
+            color: #22c55e;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        /* Client Notifications */
+        .notification-box {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        .notification-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge.pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+        .badge.approved { background: rgba(34, 197, 94, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .badge.rejected { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+        /* Admin Panel Styles */
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+        }
+        .client-section.hidden {
+            display: none;
+        }
+        .submission-item {
+            background: var(--input-bg);
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .admin-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .admin-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.4rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .btn-approve { background: var(--success); color: #fff; }
+        .btn-reject { background: var(--danger); color: #fff; }
+        .admin-btn:hover { opacity: 0.85; }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.open {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .modal-content h3 {
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">Kodanes</div>
+        <div class="header-actions">
+            <button class="btn-base" id="adminNavBtn" onclick="handleAdminNavClick()">🔐 Admin Paneli</button>
+            <button class="btn-base" onclick="toggleTheme()">☀️ / 🌙</button>
+        </div>
+    </header>
+
+    <!-- CLIENT VIEW -->
+    <div class="container client-section" id="clientSection">
+        <h1>Kodanes - AI & Agent Ecosystem</h1>
+        <p class="subtitle">Bu platform Gemini CLI ve 283+ uzman ajanın eşliğinde kalıcı bellek mimarisiyle çalışır.</p>
+
+        <!-- Live Stats Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>283</h3>
+                <p>Aktif Uzman Ajan</p>
+            </div>
+            <div class="stat-card">
+                <h3>18</h3>
+                <p>Uzmanlık Kategorisi</p>
+            </div>
+            <div class="stat-card">
+                <h3>%100</h3>
+                <p>Doğrulanmış Sağlık</p>
+            </div>
+        </div>
+
+        <!-- Client Notifications / My Requests -->
+        <h3 class="section-title">Bildirimlerim & Taleplerim</h3>
+        <div class="notification-box" id="clientNotifications">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Henüz gönderdiğiniz bir talep bulunmuyor.</p>
+        </div>
+
+        <!-- Agent Explorer -->
+        <h3 class="section-title">Uzman Ajan Kategorileri</h3>
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="filterAgents('all', this)">Tümü</button>
+            <button class="filter-btn" onclick="filterAgents('engineering', this)">Yazılım</button>
+            <button class="filter-btn" onclick="filterAgents('security', this)">Güvenlik</button>
+            <button class="filter-btn" onclick="filterAgents('marketing', this)">Pazarlama</button>
+            <button class="filter-btn" onclick="filterAgents('game', this)">Oyun</button>
+        </div>
+
+        <div class="agents-grid" id="agentsGrid">
+            <div class="agent-card" data-category="engineering">
+                <h4>Frontend Developer</h4>
+                <p>Modern web uygulamaları ve UI bileşenleri geliştirme.</p>
+            </div>
+            <div class="agent-card" data-category="engineering">
+                <h4>Backend Architect</h4>
+                <p>Ölçeklenebilir sistem tasarımı ve API mimarisi.</p>
+            </div>
+            <div class="agent-card" data-category="security">
+                <h4>Security Auditor</h4>
+                <p>Kod zaafiyetleri ve güvenlik denetimleri.</p>
+            </div>
+            <div class="agent-card" data-category="marketing">
+                <h4>SEO Specialist</h4>
+                <p>Arama motoru optimizasyonu ve organik büyüme.</p>
+            </div>
+            <div class="agent-card" data-category="game">
+                <h4>Unity Architect</h4>
+                <p>Modüler oyun sistemleri ve performans optimizasyonu.</p>
+            </div>
+            <div class="agent-card" data-category="engineering">
+                <h4>UI Designer</h4>
+                <p>Görsel tasarım sistemleri ve erişilebilir arayüzler.</p>
+            </div>
+        </div>
+
+        <!-- Contact & Request Form -->
+        <h3 class="section-title" style="margin-top: 2.5rem;">Proje Talep & İletişim</h3>
+        <form class="contact-form" id="contactForm" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <label for="name">Adınız</label>
+                <input type="text" id="name" required placeholder="Adınızı girin...">
+            </div>
+            <div class="form-group">
+                <label for="projectType">Proje Türü</label>
+                <input type="text" id="projectType" required placeholder="Örn: E-Ticaret, Mobil Uygulama...">
+            </div>
+            <div class="form-group">
+                <label for="message">Proje Detayları / Notlar</label>
+                <textarea id="message" rows="4" required placeholder="Projeniz hakkında kısa bilgi verin..."></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Talep Gönder</button>
+            <div class="form-success" id="formSuccess">Tebrikler! Proje talebiniz başarıyla alındı ve <strong>⏳ Onay Bekliyor (Beklemede)</strong> durumuna getirildi.</div>
+        </form>
+    </div>
+
+    <!-- ADMIN VIEW -->
+    <div class="container admin-section" id="adminSection">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1>👑 Yönetici Paneli (Admin)</h1>
+            <button class="btn-base" onclick="logoutAdmin()" style="border-color: var(--danger); color: var(--danger);">Çıkış Yap</button>
+        </div>
+        <p class="subtitle">Bu alana yalnızca yetkili yönetici (Bedirhan) erişebilir. Talepleri onaylayabilir veya reddedebilirsiniz.</p>
+
+        <h3 class="section-title">Gelen Proje Talepleri & Yönetim</h3>
+        <div id="submissionsList">
+            <p style="color: var(--text-muted);">Yükleniyor...</p>
+        </div>
+    </div>
+
+    <!-- LOGIN MODAL -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h3>Yönetici Girişi</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Lütfen admin şifrenizi girin:</p>
+            <form onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+                <input type="password" id="adminPassword" required placeholder="Şifre (örn: 5461)...">
+                <button type="submit" class="submit-btn">Giriş Yap</button>
+                <button type="button" class="btn-base" onclick="closeLoginModal()" style="margin-top: 0.25rem;">İptal</button>
+            </form>
+            <p id="loginError" style="color: var(--danger); font-size: 0.85rem; margin-top: 1rem; display: none;">Hatalı şifre!</p>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+        }
+
+        // Agent Filtering
+        function filterAgents(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            document.querySelectorAll('.agent-card').forEach(card => {
+                if (category === 'all' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Form Submit Handler (Backend REST API)
+        async function handleSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const projectType = document.getElementById('projectType').value;
+            const message = document.getElementById('message').value;
+
+            try {
+                const res = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, projectType, message })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    let mySubs = JSON.parse(localStorage.getItem('kodanes_my_subs') || '[]');
+                    mySubs.push(data.submission.id);
+                    localStorage.setItem('kodanes_my_subs', JSON.stringify(mySubs));
+
+                    document.getElementById('formSuccess').style.display = 'block';
+                    document.getElementById('contactForm').reset();
+                    loadClientNotifications();
+
+                    setTimeout(() => {
+                        document.getElementById('formSuccess').style.display = 'none';
+                    }, 5000);
+                } else {
+                    alert('Hata: ' + (data.error || 'Talep gönderilemedi'));
+                }
+            } catch (err) {
+                alert('Sunucu bağlantı hatası!');
+            }
+        }
+
+        // Load Client Notifications from Backend
+        async function loadClientNotifications() {
+            const box = document.getElementById('clientNotifications');
+            const mySubIds = JSON.parse(localStorage.getItem('kodanes_my_subs') || '[]');
+
+            if (mySubIds.length === 0) {
+                box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Henüz gönderdiğiniz bir talep bulunmuyor.</p>';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/submissions');
+                const submissions = await res.json();
+                const mySubmissions = submissions.filter(s => mySubIds.includes(s.id));
+
+                if (mySubmissions.length === 0) {
+                    box.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Henüz gönderdiğiniz bir talep bulunmuyor.</p>';
+                    return;
+                }
+
+                box.innerHTML = mySubmissions.map(sub => {
+                    let badgeClass = 'pending';
+                    let badgeText = '⏳ Beklemede (Onay Bekliyor)';
+                    if (sub.status === 'Onaylandı') {
+                        badgeClass = 'approved';
+                        badgeText = '✅ Onaylandı';
+                    } else if (sub.status === 'Onaylanmadı') {
+                        badgeClass = 'rejected';
+                        badgeText = '❌ Onaylanmadı (Reddedildi)';
+                    }
+
+                    return `
+                        <div class="notification-item">
+                            <div>
+                                <strong>${escapeHtml(sub.projectType)}</strong> (${escapeHtml(sub.name)})
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem;">${escapeHtml(sub.message)}</p>
+                                <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 0.1rem;">📅 ${sub.date}</p>
+                            </div>
+                            <span class="badge ${badgeClass}">${badgeText}</span>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                box.innerHTML = '<p style="color: var(--danger); font-size: 0.9rem;">Bildirimler yüklenirken sunucuya ulaşılamadı.</p>';
+            }
+        }
+
+        // Admin Auth & Navigation
+        function checkAdminAuth() {
+            return localStorage.getItem('kodanes_admin_logged_in') === 'true';
+        }
+
+        function handleAdminNavClick() {
+            if (checkAdminAuth()) {
+                showAdminPanel();
+            } else {
+                document.getElementById('loginModal').classList.add('open');
+            }
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('open');
+            document.getElementById('adminPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const password = document.getElementById('adminPassword').value;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    localStorage.setItem('kodanes_admin_logged_in', 'true');
+                    closeLoginModal();
+                    showAdminPanel();
+                } else {
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            } catch (e) {
+                alert('Giriş yapılırken sunucu hatası oluştu!');
+            }
+        }
+
+        function showAdminPanel() {
+            document.getElementById('clientSection').classList.add('hidden');
+            document.getElementById('adminSection').classList.add('active');
+            document.getElementById('adminNavBtn').innerText = '🌐 Siteye Dön';
+            document.getElementById('adminNavBtn').setAttribute('onclick', 'showClientSite()');
+            loadSubmissions();
+        }
+
+        function showClientSite() {
+            document.getElementById('adminSection').classList.remove('active');
+            document.getElementById('clientSection').classList.remove('hidden');
+            document.getElementById('adminNavBtn').innerText = '🔐 Admin Paneli';
+            document.getElementById('adminNavBtn').setAttribute('onclick', 'handleAdminNavClick()');
+            loadClientNotifications();
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('kodanes_admin_logged_in');
+            showClientSite();
+        }
+
+        async function updateStatus(id, status) {
+            try {
+                const res = await fetch('/api/update-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, status })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadSubmissions();
+                } else {
+                    alert('Durum güncellenemedi.');
+                }
+            } catch (e) {
+                alert('Sunucu bağlantı hatası!');
+            }
+        }
+
+        async function loadSubmissions() {
+            const listEl = document.getElementById('submissionsList');
+            try {
+                const res = await fetch('/api/submissions');
+                const submissions = await res.json();
+
+                if (submissions.length === 0) {
+                    listEl.innerHTML = '<p style="color: var(--text-muted);">Henüz gelen talep bulunmuyor.</p>';
+                    return;
+                }
+
+                listEl.innerHTML = submissions.map(sub => `
+                    <div class="submission-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h5>👤 ${escapeHtml(sub.name)} — <em>${escapeHtml(sub.projectType)}</em></h5>
+                            <span class="badge ${sub.status === 'Onaylandı' ? 'approved' : sub.status === 'Onaylanmadı' ? 'rejected' : 'pending'}">${sub.status}</span>
+                        </div>
+                        <p>💬 ${escapeHtml(sub.message)}</p>
+                        <p style="font-size: 0.8rem; opacity: 0.7;">📅 ${sub.date}</p>
+                        <div class="admin-actions">
+                            <button class="admin-btn btn-approve" onclick="updateStatus('${sub.id}', 'Onaylandı')">✅ Onayla</button>
+                            <button class="admin-btn btn-reject" onclick="updateStatus('${sub.id}', 'Onaylanmadı')">❌ Reddet / Onaylanmadı</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                listEl.innerHTML = '<p style="color: var(--danger);">Sunucudan talepler yüklenemedi.</p>';
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // On load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadClientNotifications();
+        });
+    </script>
+</body>
+</html>
